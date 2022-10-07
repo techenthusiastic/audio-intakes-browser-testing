@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <textarea name="" id="" cols="30" rows="10"></textarea>
+    <script>
+      const textarea = document.getElementsByTagName("textarea")[0];
+      const getAllSupportedMimeTypes = (mediaType, MIME_EXT, FILE_EXT) => {
+        const suppType = { mimeType: "", fileExt: "" };
+
+        const CODECS = [
+          "vp9",
+          "vp9.0",
+          "vp8",
+          "vp8.0",
+          "avc1",
+          "av1",
+          "h265",
+          "h.265",
+          "h264",
+          "h.264",
+          "opus",
+        ];
+
+        const fE_Len = MIME_EXT.length;
+        let flag = false;
+
+        /* Loop over all the MIME extensions. */
+        for (let i = 0; i < fE_Len; i++) {
+          const ext = MIME_EXT[i];
+
+          for (let j = 0; j < CODECS.length; j++) {
+            const codec = CODECS[j];
+
+            /* Create a list of codecs based in the media type, extension and codec.
+              Then filter out all unsupported codecs. */
+            const supp = [
+              `${mediaType}/${ext};codecs:${codec}`,
+              `${mediaType}/${ext};codecs=${codec}`,
+              `${mediaType}/${ext};codecs:${codec.toUpperCase()}`,
+              `${mediaType}/${ext};codecs=${codec.toUpperCase()}`,
+              `${mediaType}/${ext}`,
+            ].filter((variation) =>
+              window.MediaRecorder.isTypeSupported(variation)
+            );
+
+            const suppList = [...new Set(supp)];
+            console.log(suppList);
+
+            if (suppList.length) {
+              suppType.mimeType = suppList[0];
+              suppType.fileExt = FILE_EXT[i];
+              flag = true;
+              break;
+            }
+          }
+
+          if (flag === true) break;
+        }
+
+        return suppType;
+      };
+
+      const AUDIO_MIME_EXT = [
+        "wav",
+        "webm",
+        "ogg",
+        "opus",
+        "aac",
+        "mpeg",
+        "mp4",
+      ];
+      const AUDIO_FILE_EXT = [
+        ".wav",
+        ".weba",
+        ".oga",
+        ".opus",
+        ".aac",
+        ".mp3",
+        ".mp4",
+      ];
+      const supportedAudio = getAllSupportedMimeTypes(
+        "audio",
+        AUDIO_MIME_EXT,
+        AUDIO_FILE_EXT
+      );
+      textarea.value = JSON.stringify(supportedAudio);
+      console.log(supportedAudio);
+    </script>
+  </body>
+</html>
